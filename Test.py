@@ -21,3 +21,26 @@ def strip_inner_quotes(s: str) -> str:
 # Demo
 s = '"Description": "some "bad" "messy" text", "Recommendation": "other "bad" text"'
 print(strip_inner_quotes(s))
+
+
+
+#remove desc and recommend 
+import re
+
+def remove_fields(s: str, fields) -> str:
+    for field in fields:
+        # Remove "field": <anything until next comma or brace>
+        s = re.sub(rf'\s*"{field}"\s*:\s*.*?(?=,|}})', '', s, flags=re.DOTALL)
+
+    # Remove leftover ",," or ", }"
+    s = re.sub(r',\s*,+', ',', s)
+    s = re.sub(r'{\s*,', '{', s)
+    s = re.sub(r',\s*}', '}', s)
+
+    return s.strip()
+
+# Example
+s = '''{ "id": 1, "desc": "some "bad" "text"", "rec: "even more "bad" "text"", "status": "ok" }'''
+
+cleaned = remove_fields(s, ["desc", "recommend"])
+print(cleaned)
